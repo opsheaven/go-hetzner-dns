@@ -1,0 +1,28 @@
+name: 'Verify Pull Request'
+
+"on":
+  pull_request:
+    branches:
+      - 'main'
+
+jobs:
+  pre-commit:
+    runs-on: 'ubuntu-latest'
+    steps:
+    - name: 'Checkout'
+      uses: 'actions/checkout@v4'
+
+    - name: 'Install Repository Specific Tools'
+      run: make tools
+
+    - name: 'Install Python for Pre-Commit'
+      uses: 'actions/setup-python@v3'
+
+    - name: 'Verify Files'
+      uses: 'pre-commit/action@v3.0.1'
+
+    - name: 'build'
+      run: make build
+
+    - name: 'test'
+      run: make test

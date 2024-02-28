@@ -1,0 +1,25 @@
+---
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: check-case-conflict
+      - id: check-json
+        files: \.json$
+      - id: check-merge-conflict
+      - id: check-shebang-scripts-are-executable
+        files: \.sh$
+      - id: check-executables-have-shebangs
+        files: \.sh$
+      - id: check-yaml
+        files: \.(yaml|yml)sh$
+      - id: detect-aws-credentials
+        args:
+          - --allow-missing-credentials
+      - id: detect-private-key
+      - id: double-quote-string-fixer
+        files: \.(yaml|yml|json)sh$
+      - id: end-of-file-fixer
+      - id: no-commit-to-branch
+      - id: trailing-whitespace

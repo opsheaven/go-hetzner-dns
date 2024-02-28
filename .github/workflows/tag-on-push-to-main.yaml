@@ -1,0 +1,27 @@
+---
+
+name: 'Tag'
+
+"on":
+  push:
+    branches:
+    - 'main'
+
+permissions:
+  contents: 'write'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v4.1.1
+        with:
+          fetch-tags: true
+          fetch-depth: 0
+
+      - name: 'Generate Release'
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+        run: |
+          make release
