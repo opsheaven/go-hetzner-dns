@@ -18,6 +18,11 @@ jobs:
     - name: 'Install Python for Pre-Commit'
       uses: 'actions/setup-python@v3'
 
+    - name: 'Install Go for tests'
+      uses: actions/setup-go@v5
+      with:
+        go-version: '^1.21.0'
+
     - name: 'Verify Files'
       uses: 'pre-commit/action@v3.0.1'
 
