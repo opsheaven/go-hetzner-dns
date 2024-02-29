@@ -39,8 +39,11 @@ import (
 )
 
 func main() {
-    client := gohetznerdns.NewClient()
-    err := client.SetToken(token)
+    token:="aaaabbbccxcdasda"
+    client,err := gohetznerdns.NewClient(token)
+    if err != nil {
+        fmt.Errorf("invalid token %s", token)
+    }
 }
 ```
 

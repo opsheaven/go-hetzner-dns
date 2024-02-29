@@ -6,13 +6,14 @@ type HetznerDNS struct {
 	RecordService RecordService
 }
 
-func NewClient() *HetznerDNS {
+func NewClient(token string) (*HetznerDNS, error) {
 	cli := newClient()
-	return &HetznerDNS{
+	dns := &HetznerDNS{
 		client:        cli,
 		ZoneService:   &zoneService{client: cli},
 		RecordService: &recordService{client: cli},
 	}
+	return dns, dns.SetToken(token)
 }
 
 func (dns *HetznerDNS) SetBaseURL(baseUrl string) error {
