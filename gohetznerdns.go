@@ -1,4 +1,4 @@
-package hetznerdns
+package gohetznerdns
 
 type HetznerDNS struct {
 	client        *client

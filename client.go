@@ -1,4 +1,4 @@
-package hetznerdns
+package gohetznerdns
 
 import (
 	"encoding/json"
@@ -88,7 +88,6 @@ func (r *request) execute(method, path string) ([]byte, error) {
 		return nil, err
 	}
 	response, err := r.request.Execute(method, u.String())
-
 	if err != nil {
 		return nil, err
 	}

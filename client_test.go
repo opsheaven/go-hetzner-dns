@@ -1,4 +1,4 @@
-package hetznerdns
+package gohetznerdns
 
 import (
 	"fmt"
