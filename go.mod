@@ -1,4 +1,4 @@
-module github.com/opsheaven/go-hetzner-dns
+module github.com/opsheaven/gohetznerdns
 
 go 1.21.0
 
