@@ -65,7 +65,7 @@ type ZoneService interface {
 	GetZoneById(zone_id string) (*Zone, error)
 	CreateZone(request Zone) (*Zone, error)
 	UpdateZone(zone_id string, request Zone) (*Zone, error)
-	DeleteZone(zone_id string) (bool, error)
+	DeleteZone(zone_id string) error
 	ValidateZoneFile(zonefile string) error
 	ExportZoneFile(zone_id string) (*string, error)
 	ImportZoneFile(zone_id string, zonefile string) (*Zone, error)
@@ -154,20 +154,16 @@ func (service *zoneService) UpdateZone(zone_id string, request Zone) (*Zone, err
 	return zone.Zone, nil
 }
 
-func (service *zoneService) DeleteZone(zone_id string) (bool, error) {
+func (service *zoneService) DeleteZone(zone_id string) error {
 	if err := validateNotEmpty("zone_id", zone_id); err != nil {
-		return false, err
+		return err
 	}
 
-	zone := new(zone)
 	_, err := service.client.
 		createJsonRequest(200, 404).
-		setResult(zone).
 		execute("DELETE", zonesBasePath+"/"+zone_id)
-	if err != nil {
-		return false, err
-	}
-	return true, nil
+
+	return err
 }
 
 func (service *zoneService) ValidateZoneFile(zonefile string) error {
@@ -183,7 +179,9 @@ func (service *zoneService) ValidateZoneFile(zonefile string) error {
 		execute("POST", zonesBasePath+"/file/validate")
 
 	if err != nil {
-		return fmt.Errorf(r.Error.Message)
+		if r.Error != nil && r.Error.Message != "" {
+			return fmt.Errorf(r.Error.Message)
+		}
 	}
 	return err
 }

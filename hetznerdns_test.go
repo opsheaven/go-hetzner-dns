@@ -29,5 +29,5 @@ func TestSetToken(t *testing.T) {
 
 func TestSetTokenEmpty(t *testing.T) {
 	err := NewClient().SetToken("    ")
-	assert.Error(t, err, "token is invalid because cannot be emtpy")
+	assert.Error(t, err, "token is invalid because cannot be empty")
 }

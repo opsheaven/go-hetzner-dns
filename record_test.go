@@ -15,7 +15,7 @@ import (
 func TestGetAllRecordsWithEmptyZoneId(t *testing.T) {
 	service := &recordService{}
 	_, err := service.GetAllRecords("    ")
-	assert.Error(t, err, "zone_id is invalid because cannot be emtpy")
+	assert.Error(t, err, "zone_id is invalid because cannot be empty")
 }
 
 func TestGetAllRecords(t *testing.T) {
@@ -89,7 +89,7 @@ func TestGetAllRecordsError(t *testing.T) {
 func TestGetRecordWithEmptyRecordId(t *testing.T) {
 	service := &recordService{}
 	_, err := service.GetRecord("    ")
-	assert.Error(t, err, "record_id is invalid because cannot be emtpy")
+	assert.Error(t, err, "record_id is invalid because cannot be empty")
 }
 
 func TestGetRecord(t *testing.T) {
@@ -250,7 +250,7 @@ func TestUpdateRecordWithEmptyRecordId(t *testing.T) {
 	}
 	service := &recordService{}
 	_, err := service.UpdateRecord("    ", *record)
-	assert.Error(t, err, "record_id is invalid because cannot be emtpy")
+	assert.Error(t, err, "record_id is invalid because cannot be empty")
 }
 
 func TestUpdateRecord(t *testing.T) {
@@ -339,7 +339,7 @@ func TestUpdateRecordWithError(t *testing.T) {
 func TestDeleteRecordWithEmptyRecordId(t *testing.T) {
 	service := &recordService{}
 	err := service.DeleteRecord("    ")
-	assert.Error(t, err, "record_id is invalid because cannot be emtpy")
+	assert.Error(t, err, "record_id is invalid because cannot be empty")
 }
 
 func TestDeleteRecord(t *testing.T) {
@@ -363,14 +363,14 @@ func TestDeleteRecord(t *testing.T) {
 func TestCreateRecords(t *testing.T) {
 	records := &Records{
 		Records: []*Record{
-			&Record{
+			{
 				Type:   "A",
 				ZoneId: "Zone_Id",
 				Name:   "www",
 				Value:  "192.168.1.1",
 				TTL:    3600,
 			},
-			&Record{
+			{
 				Type:   "A",
 				ZoneId: "Zone_Id",
 				Name:   "www",
@@ -445,14 +445,14 @@ func TestCreateRecords(t *testing.T) {
 func TestCreateRecordsError(t *testing.T) {
 	records := &Records{
 		Records: []*Record{
-			&Record{
+			{
 				Type:   "A",
 				ZoneId: "Zone_Id",
 				Name:   "www",
 				Value:  "192.168.1.1",
 				TTL:    3600,
 			},
-			&Record{
+			{
 				Type:   "A",
 				ZoneId: "Zone_Id",
 				Name:   "www",
@@ -490,7 +490,7 @@ func TestCreateRecordsError(t *testing.T) {
 func TestUpdateRecords(t *testing.T) {
 	records := &Records{
 		Records: []*Record{
-			&Record{
+			{
 				Type:   "A",
 				ZoneId: "Zone_Id",
 				Name:   "www",
@@ -498,7 +498,7 @@ func TestUpdateRecords(t *testing.T) {
 				TTL:    3600,
 				Id:     "1",
 			},
-			&Record{
+			{
 				Type:   "A",
 				ZoneId: "Zone_Id",
 				Name:   "www",
@@ -551,7 +551,7 @@ func TestUpdateRecords(t *testing.T) {
 func TestUpdateRecordsError(t *testing.T) {
 	records := &Records{
 		Records: []*Record{
-			&Record{
+			{
 				Type:   "A",
 				ZoneId: "Zone_Id",
 				Name:   "www",
@@ -559,7 +559,7 @@ func TestUpdateRecordsError(t *testing.T) {
 				TTL:    3600,
 				Id:     "1",
 			},
-			&Record{
+			{
 				Type:   "A",
 				ZoneId: "Zone_Id",
 				Name:   "www",

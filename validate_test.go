@@ -19,5 +19,5 @@ func TestValidateNotEmpty(t *testing.T) {
 
 func TestValidateEmpty(t *testing.T) {
 	err := validateNotEmpty("test", "    ")
-	assert.Error(t, err, "test is invalid because cannot be emtpy")
+	assert.Error(t, err, "test is invalid because cannot be empty")
 }

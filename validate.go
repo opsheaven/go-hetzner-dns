@@ -23,7 +23,7 @@ func (e *argError) Error() string {
 
 func validateNotEmpty(name, value string) error {
 	if len(strings.TrimSpace(value)) == 0 {
-		return newArgError(name, "cannot be emtpy")
+		return newArgError(name, "cannot be empty")
 	}
 	return nil
 }
