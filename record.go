@@ -1,7 +1,5 @@
 package gohetznerdns
 
-const recordsBasePath = "/records"
-
 type Record struct {
 	Type   string `json:"type"`
 	Id     string `json:"id"`
@@ -19,6 +17,7 @@ type Records struct {
 	InvalidRecords []*Record `json:"invalid_records"`
 }
 
+/*
 type RecordService interface {
 	GetAllRecords(zone_id string) ([]*Record, error)
 	GetRecord(record_id string) (*Record, error)
@@ -138,3 +137,4 @@ func (service *recordService) UpdateRecords(request Records) (*Records, error) {
 	}
 	return response, nil
 }
+*/

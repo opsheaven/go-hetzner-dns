@@ -72,10 +72,10 @@ func TestGetAllZones(t *testing.T) {
 
 	assert.NilError(t, err)
 	assert.Equal(t, len(zones), 2)
-	assert.Equal(t, zones[0].Id, "1")
-	assert.Equal(t, zones[0].Name, "a")
-	assert.Equal(t, zones[1].Id, "2")
-	assert.Equal(t, zones[1].Name, "b")
+	assert.Equal(t, *zones[0].Id, "1")
+	assert.Equal(t, *zones[0].Name, "a")
+	assert.Equal(t, *zones[1].Id, "2")
+	assert.Equal(t, *zones[1].Name, "b")
 }
 
 func TestGetAllZonesError(t *testing.T) {
@@ -105,12 +105,14 @@ func TestGetAllZonesError(t *testing.T) {
 }
 
 func TestGetZoneWithEmptyZoneId(t *testing.T) {
+	token := "            "
 	service := &zoneService{}
-	_, err := service.GetZoneById("    ")
-	assert.Error(t, err, "zone_id is invalid because cannot be empty")
+	_, err := service.GetZoneById(&token)
+	assert.Error(t, err, "901 : zoneId is empty")
 }
 
 func TestGetZone(t *testing.T) {
+	id := "1"
 	mux := http.NewServeMux()
 	server := httptest.NewServer(mux)
 
@@ -132,15 +134,16 @@ func TestGetZone(t *testing.T) {
 	client := newClient()
 	client.setBaseURL(server.URL)
 	zoneService := &zoneService{client: client}
-	zone, err := zoneService.GetZoneById("1")
+	zone, err := zoneService.GetZoneById(&id)
 
 	assert.NilError(t, err)
 	assert.Assert(t, zone != nil)
-	assert.Equal(t, zone.Id, "1")
-	assert.Equal(t, zone.Name, "test.com")
+	assert.Equal(t, *zone.Id, "1")
+	assert.Equal(t, *zone.Name, "test.com")
 }
 
 func TestGetZoneError(t *testing.T) {
+	id := "1"
 	mux := http.NewServeMux()
 	server := httptest.NewServer(mux)
 
@@ -159,17 +162,15 @@ func TestGetZoneError(t *testing.T) {
 	client := newClient()
 	client.setBaseURL(server.URL)
 	zoneService := &zoneService{client: client}
-	_, err := zoneService.GetZoneById("1")
+	_, err := zoneService.GetZoneById(&id)
 
 	assert.Error(t, err, "unexpected end of JSON input")
 }
 
 func TestCreateZone(t *testing.T) {
-	zone := &Zone{
-		Name:    "test.com",
-		Owner:   "test",
-		Project: "project",
-	}
+	name := "test.com"
+	ttl := 3600
+	zoneRequest := &ZoneRequest{Name: &name, TTL: &ttl}
 
 	mux := http.NewServeMux()
 	server := httptest.NewServer(mux)
@@ -184,14 +185,12 @@ func TestCreateZone(t *testing.T) {
 			http.Error(w, "can't read body", http.StatusBadRequest)
 			return
 		}
-		expected, _ := json.Marshal(zone)
+		expected, _ := json.Marshal(zoneRequest)
 		assert.Equal(t, string(body), string(expected))
 		response := `
 		{
 			"zone":{
 				"name":"test.com",
-				"owner":"test",
-				"project":"project",
 				"id":"domain"
 			}
 		}
@@ -203,22 +202,18 @@ func TestCreateZone(t *testing.T) {
 	client := newClient()
 	client.setBaseURL(server.URL)
 	zoneService := &zoneService{client: client}
-	zone, err := zoneService.CreateZone(*zone)
+	zone, err := zoneService.CreateZone(zoneRequest)
 
 	assert.NilError(t, err)
 	assert.Assert(t, zone != nil)
-	assert.Equal(t, zone.Id, "domain")
-	assert.Equal(t, zone.Name, "test.com")
-	assert.Equal(t, zone.Project, "project")
-	assert.Equal(t, zone.Owner, "test")
+	assert.Equal(t, *zone.Id, "domain")
+	assert.Equal(t, *zone.Name, "test.com")
 }
 
 func TestCreateZoneError(t *testing.T) {
-	zone := &Zone{
-		Name:    "test.com",
-		Owner:   "test",
-		Project: "project",
-	}
+	name := "test.com"
+	ttl := 3600
+	zoneRequest := &ZoneRequest{Name: &name, TTL: &ttl}
 	mux := http.NewServeMux()
 	server := httptest.NewServer(mux)
 
@@ -236,24 +231,23 @@ func TestCreateZoneError(t *testing.T) {
 	client := newClient()
 	client.setBaseURL(server.URL)
 	zoneService := &zoneService{client: client}
-	_, err := zoneService.CreateZone(*zone)
+	_, err := zoneService.CreateZone(zoneRequest)
 
 	assert.Error(t, err, "unexpected end of JSON input")
 }
 
 func TestUpdateZoneWithEmptyZoneId(t *testing.T) {
+
 	service := &zoneService{}
-	_, err := service.UpdateZone("    ", Zone{})
-	assert.Error(t, err, "zone_id is invalid because cannot be empty")
+	_, err := service.UpdateZone(nil, &ZoneRequest{})
+	assert.Error(t, err, "900 : zoneId is nil")
 }
 
 func TestUpdateZone(t *testing.T) {
-	zone := &Zone{
-		Name:    "test.com",
-		Owner:   "test",
-		Project: "project",
-		Id:      "domain",
-	}
+	id := "domain"
+	name := "test.com"
+	ttl := 3600
+	zoneRequest := &ZoneRequest{Name: &name, TTL: &ttl}
 
 	mux := http.NewServeMux()
 	server := httptest.NewServer(mux)
@@ -268,14 +262,12 @@ func TestUpdateZone(t *testing.T) {
 			http.Error(w, "can't read body", http.StatusBadRequest)
 			return
 		}
-		expected, _ := json.Marshal(zone)
+		expected, _ := json.Marshal(zoneRequest)
 		assert.Equal(t, string(body), string(expected))
 		response := `
 		{
 			"zone":{
 				"name":"test.com",
-				"owner":"test",
-				"project":"project",
 				"id":"domain"
 			}
 		}
@@ -286,23 +278,19 @@ func TestUpdateZone(t *testing.T) {
 	client := newClient()
 	client.setBaseURL(server.URL)
 	zoneService := &zoneService{client: client}
-	zone, err := zoneService.UpdateZone("domain", *zone)
+	zone, err := zoneService.UpdateZone(&id, zoneRequest)
 
 	assert.NilError(t, err)
 	assert.Assert(t, zone != nil)
-	assert.Equal(t, zone.Id, "domain")
-	assert.Equal(t, zone.Name, "test.com")
-	assert.Equal(t, zone.Project, "project")
-	assert.Equal(t, zone.Owner, "test")
+	assert.Equal(t, *zone.Id, "domain")
+	assert.Equal(t, *zone.Name, "test.com")
 }
 
 func TestUpdateZoneError(t *testing.T) {
-	zone := &Zone{
-		Name:    "test.com",
-		Owner:   "test",
-		Project: "project",
-		Id:      "domain",
-	}
+	id := "domain"
+	name := "test.com"
+	ttl := 3600
+	zoneRequest := &ZoneRequest{Name: &name, TTL: &ttl}
 	mux := http.NewServeMux()
 	server := httptest.NewServer(mux)
 
@@ -320,18 +308,20 @@ func TestUpdateZoneError(t *testing.T) {
 	client := newClient()
 	client.setBaseURL(server.URL)
 	zoneService := &zoneService{client: client}
-	_, err := zoneService.UpdateZone("domain", *zone)
+	_, err := zoneService.UpdateZone(&id, zoneRequest)
 
 	assert.Error(t, err, "unexpected end of JSON input")
 }
 
 func TestDeleteZoneWithEmptyZoneId(t *testing.T) {
+	id := "           "
 	service := &zoneService{}
-	err := service.DeleteZone("    ")
-	assert.Error(t, err, "zone_id is invalid because cannot be empty")
+	err := service.DeleteZone(&id)
+	assert.Error(t, err, "901 : zoneId is empty")
 }
 
 func TestDeleteZone(t *testing.T) {
+	id := "domain"
 	mux := http.NewServeMux()
 	server := httptest.NewServer(mux)
 
@@ -344,19 +334,20 @@ func TestDeleteZone(t *testing.T) {
 	client := newClient()
 	client.setBaseURL(server.URL)
 	zoneService := &zoneService{client: client}
-	err := zoneService.DeleteZone("domain")
+	err := zoneService.DeleteZone(&id)
 
 	assert.NilError(t, err)
 }
 
 func TestValidateZoneFileWithEmptyFile(t *testing.T) {
+	zoneFile := "    "
 	service := &zoneService{}
-	err := service.ValidateZoneFile("    ")
-	assert.Error(t, err, "zonefile is invalid because cannot be empty")
+	err := service.ValidateZoneFile(&zoneFile)
+	assert.Error(t, err, "901 : zoneFile is empty")
 }
 
 func TestValidateZone(t *testing.T) {
-	zonefile := "$ORIGIN pinchflat.dev.\n$TTL 3600\n@		IN	SOA	hydrogen.ns.hetzner.com. dns.hetzner.com. 2024022431 86400 10800 3600000 3600"
+	zoneFile := "$ORIGIN opsheaven.space.\n$TTL 3600\n@		IN	SOA	hydrogen.ns.hetzner.com. dns.hetzner.com. 2024022431 86400 10800 3600000 3600"
 	mux := http.NewServeMux()
 	server := httptest.NewServer(mux)
 
@@ -370,7 +361,7 @@ func TestValidateZone(t *testing.T) {
 			http.Error(w, "can't read body", http.StatusBadRequest)
 			return
 		}
-		assert.Equal(t, string(body), string(zonefile))
+		assert.Equal(t, string(body), string(zoneFile))
 		response := `{
 			"parsed_records": 0
 		  }`
@@ -380,12 +371,13 @@ func TestValidateZone(t *testing.T) {
 	client := newClient()
 	client.setBaseURL(server.URL)
 	zoneService := &zoneService{client: client}
-	err := zoneService.ValidateZoneFile(zonefile)
+	err := zoneService.ValidateZoneFile(&zoneFile)
 
 	assert.NilError(t, err)
 }
 
 func TestValidateZoneError(t *testing.T) {
+	id := "domain"
 	mux := http.NewServeMux()
 	server := httptest.NewServer(mux)
 
@@ -399,26 +391,28 @@ func TestValidateZoneError(t *testing.T) {
 			}
 		}
 		`
-		w.WriteHeader(http.StatusNotFound)
+		w.WriteHeader(http.StatusUnprocessableEntity)
 		fmt.Fprint(w, response)
 	})
 
 	client := newClient()
 	client.setBaseURL(server.URL)
 	zoneService := &zoneService{client: client}
-	err := zoneService.ValidateZoneFile("domain")
+	err := zoneService.ValidateZoneFile(&id)
 
-	assert.Error(t, err, "Invalid Zone File")
+	assert.Error(t, err, "422 Unprocessable Entity")
 }
 
 func TestExportZoneFileWithEmptyZoneId(t *testing.T) {
+	id := "         "
 	service := &zoneService{}
-	_, err := service.ExportZoneFile("    ")
-	assert.Error(t, err, "zone_id is invalid because cannot be empty")
+	_, err := service.ExportZoneFile(&id)
+	assert.Error(t, err, "901 : zoneId is empty")
 }
 
 func TestExportZoneFile(t *testing.T) {
-	expected := "$ORIGIN pinchflat.dev."
+	id := "domain"
+	expected := "$ORIGIN opsheaven.space."
 	mux := http.NewServeMux()
 	server := httptest.NewServer(mux)
 
@@ -432,13 +426,14 @@ func TestExportZoneFile(t *testing.T) {
 	client := newClient()
 	client.setBaseURL(server.URL)
 	zoneService := &zoneService{client: client}
-	actual, err := zoneService.ExportZoneFile("domain")
+	actual, err := zoneService.ExportZoneFile(&id)
 
 	assert.NilError(t, err)
 	assert.Equal(t, *actual, expected)
 }
 
 func TestExportZoneFileError(t *testing.T) {
+	id := "domain"
 	mux := http.NewServeMux()
 	server := httptest.NewServer(mux)
 
@@ -451,25 +446,30 @@ func TestExportZoneFileError(t *testing.T) {
 	client := newClient()
 	client.setBaseURL(server.URL)
 	zoneService := &zoneService{client: client}
-	_, err := zoneService.ExportZoneFile("domain")
+	_, err := zoneService.ExportZoneFile(&id)
 
 	assert.Error(t, err, "404 Not Found")
 }
 
 func TestImportZoneFileWithEmptyZoneId(t *testing.T) {
+	id := "  "
+	zoneFile := "domain"
 	service := &zoneService{}
-	_, err := service.ImportZoneFile("    ", "asdadas")
-	assert.Error(t, err, "zone_id is invalid because cannot be empty")
+	_, err := service.ImportZoneFile(&id, &zoneFile)
+	assert.Error(t, err, "901 : zoneId is empty")
 }
 
 func TestImportZoneFileWithEmptyZoneFile(t *testing.T) {
+	id := "domain"
+	zoneFile := "   "
 	service := &zoneService{}
-	_, err := service.ImportZoneFile("domain", "     ")
-	assert.Error(t, err, "zonefile is invalid because cannot be empty")
+	_, err := service.ImportZoneFile(&id, &zoneFile)
+	assert.Error(t, err, "901 : zoneFile is empty")
 }
 
 func TestImportZoneFile(t *testing.T) {
-	expected := "$ORIGIN pinchflat.dev."
+	id := "domain"
+	expected := "$ORIGIN opsheaven.space."
 	mux := http.NewServeMux()
 	server := httptest.NewServer(mux)
 
@@ -488,8 +488,6 @@ func TestImportZoneFile(t *testing.T) {
 		{
 			"zone":{
 				"name":"test.com",
-				"owner":"test",
-				"project":"project",
 				"id":"domain"
 			}
 		}
@@ -500,17 +498,17 @@ func TestImportZoneFile(t *testing.T) {
 	client := newClient()
 	client.setBaseURL(server.URL)
 	zoneService := &zoneService{client: client}
-	zone, err := zoneService.ImportZoneFile("domain", expected)
+	zone, err := zoneService.ImportZoneFile(&id, &expected)
 
 	assert.NilError(t, err)
 	assert.Assert(t, zone != nil)
-	assert.Equal(t, zone.Id, "domain")
-	assert.Equal(t, zone.Name, "test.com")
-	assert.Equal(t, zone.Project, "project")
-	assert.Equal(t, zone.Owner, "test")
+	assert.Equal(t, *zone.Id, "domain")
+	assert.Equal(t, *zone.Name, "test.com")
 }
 
 func TestImporttZoneFileError(t *testing.T) {
+	id := "domain"
+	zoneFile := "asdadsa"
 	mux := http.NewServeMux()
 	server := httptest.NewServer(mux)
 
@@ -524,7 +522,7 @@ func TestImporttZoneFileError(t *testing.T) {
 	client := newClient()
 	client.setBaseURL(server.URL)
 	zoneService := &zoneService{client: client}
-	_, err := zoneService.ImportZoneFile("domain", "asdada")
+	_, err := zoneService.ImportZoneFile(&id, &zoneFile)
 
 	assert.Error(t, err, "unexpected end of JSON input")
 }
