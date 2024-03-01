@@ -79,7 +79,7 @@ func (service *zoneService) GetZoneById(zoneId *string) (*Zone, error) {
 func (service *zoneService) CreateZone(request *ZoneRequest) (*Zone, error) {
 	zone := new(ZoneResponse)
 	_, err := service.client.
-		createJsonRequest(201).
+		createJsonRequest(200, 201).
 		setResult(zone).
 		setBody(request).
 		execute("POST", zonesBasePath)
