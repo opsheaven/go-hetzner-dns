@@ -1,17 +1,17 @@
 package gohetznerdns
 
 type HetznerDNS struct {
-	client      *client
-	ZoneService ZoneService
-	//RecordService RecordService
+	client        *client
+	ZoneService   ZoneService
+	RecordService RecordService
 }
 
 func NewClient(token string) (*HetznerDNS, error) {
 	cli := newClient()
 	dns := &HetznerDNS{
-		client:      cli,
-		ZoneService: &zoneService{client: cli},
-		//	RecordService: &recordService{client: cli},
+		client:        cli,
+		ZoneService:   &zoneService{client: cli},
+		RecordService: &recordService{client: cli},
 	}
 	return dns, dns.SetToken(token)
 }

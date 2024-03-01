@@ -1,13 +1,23 @@
 package gohetznerdns
 
-/*
+import (
+	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
+	"gotest.tools/assert"
+)
+
 func TestGetAllRecordsWithEmptyZoneId(t *testing.T) {
+	zone_id := "            "
 	service := &recordService{}
-	_, err := service.GetAllRecords("    ")
-	assert.Error(t, err, "zone_id is invalid because cannot be empty")
+	_, err := service.GetAllRecords(&zone_id)
+	assert.Error(t, err, "901 : zone_id is empty")
 }
 
 func TestGetAllRecords(t *testing.T) {
+	zone_id := "zone_id"
 	mux := http.NewServeMux()
 	server := httptest.NewServer(mux)
 
@@ -35,20 +45,21 @@ func TestGetAllRecords(t *testing.T) {
 	client := newClient()
 	client.setBaseURL(server.URL)
 	recordService := &recordService{client: client}
-	records, err := recordService.GetAllRecords("zone_id")
+	records, err := recordService.GetAllRecords(&zone_id)
 
 	assert.NilError(t, err)
 	assert.Equal(t, len(records), 1)
-	assert.Equal(t, records[0].Id, "123")
-	assert.Equal(t, records[0].Name, "Record")
-	assert.Equal(t, records[0].TTL, 3600)
-	assert.Equal(t, records[0].Type, "A")
-	assert.Equal(t, records[0].Value, "Value")
-	assert.Equal(t, records[0].ZoneId, "Zone_id")
+	assert.Equal(t, *records[0].Id, "123")
+	assert.Equal(t, *records[0].Name, "Record")
+	assert.Equal(t, *records[0].TTL, 3600)
+	assert.Equal(t, *records[0].Type, "A")
+	assert.Equal(t, *records[0].Value, "Value")
+	assert.Equal(t, *records[0].ZoneId, "Zone_id")
 
 }
 
 func TestGetAllRecordsError(t *testing.T) {
+	zone_id := "zone_id"
 	mux := http.NewServeMux()
 	server := httptest.NewServer(mux)
 
@@ -69,11 +80,13 @@ func TestGetAllRecordsError(t *testing.T) {
 	client := newClient()
 	client.setBaseURL(server.URL)
 	recordService := &recordService{client: client}
-	_, err := recordService.GetAllRecords("zone_id")
+	_, err := recordService.GetAllRecords(&zone_id)
 
 	assert.Error(t, err, "unexpected end of JSON input")
 
 }
+
+/*
 
 func TestGetRecordWithEmptyRecordId(t *testing.T) {
 	service := &recordService{}

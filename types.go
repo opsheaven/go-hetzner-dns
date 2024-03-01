@@ -51,3 +51,16 @@ type Error struct {
 func (e *Error) Error() error {
 	return fmt.Errorf("%d : %s", e.Code, e.Message)
 }
+
+type Record struct {
+	Type   *string `json:"type"`
+	Id     *string `json:"id"`
+	ZoneId *string `json:"zone_id"`
+	Name   *string `json:"name"`
+	Value  *string `json:"value"`
+	TTL    *int    `json:"ttl"`
+}
+
+type Records struct {
+	Records []*Record `json:"records"`
+}
