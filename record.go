@@ -2,8 +2,9 @@ package gohetznerdns
 
 type RecordService interface {
 	GetAllRecords(zone_id *string) ([]*Record, error)
+	GetRecord(record_id *string) (*Record, error)
 	/*
-		GetRecord(record_id string) (*Record, error)
+
 		CreateRecord(request Record) (*Record, error)
 		UpdateRecord(record_id string, request Record) (*Record, error)
 		DeleteRecord(record_id string) error
@@ -34,27 +35,22 @@ func (service *recordService) GetAllRecords(zone_id *string) ([]*Record, error) 
 	}
 	return records.Records, nil
 }
-
-/*
-
-
-
-
-// GetRecord implements RecordsService.
-func (service *recordService) GetRecord(record_id string) (*Record, error) {
+func (service *recordService) GetRecord(record_id *string) (*Record, error) {
 	if err := validateNotEmpty("record_id", record_id); err != nil {
 		return nil, err
 	}
-	record := new(record)
+	record := new(RecordResponse)
 	_, err := service.client.
 		createJsonRequest(200).
 		setResult(record).
-		execute("GET", recordsBasePath+"/"+record_id)
+		execute("GET", recordsBasePath+"/"+*record_id)
 	if err != nil {
 		return nil, err
 	}
 	return record.Record, nil
 }
+
+/*
 
 // CreateRecord implements RecordsService.
 func (service *recordService) CreateRecord(request Record) (*Record, error) {

@@ -86,15 +86,15 @@ func TestGetAllRecordsError(t *testing.T) {
 
 }
 
-/*
-
 func TestGetRecordWithEmptyRecordId(t *testing.T) {
+	record_id := "         "
 	service := &recordService{}
-	_, err := service.GetRecord("    ")
-	assert.Error(t, err, "record_id is invalid because cannot be empty")
+	_, err := service.GetRecord(&record_id)
+	assert.Error(t, err, "901 : record_id is empty")
 }
 
 func TestGetRecord(t *testing.T) {
+	record_id := "123"
 	mux := http.NewServeMux()
 	server := httptest.NewServer(mux)
 
@@ -120,19 +120,20 @@ func TestGetRecord(t *testing.T) {
 	client := newClient()
 	client.setBaseURL(server.URL)
 	recordService := &recordService{client: client}
-	record, err := recordService.GetRecord("123")
+	record, err := recordService.GetRecord(&record_id)
 
 	assert.NilError(t, err)
 	assert.Assert(t, record != nil)
-	assert.Equal(t, record.Id, "123")
-	assert.Equal(t, record.Name, "Record")
-	assert.Equal(t, record.TTL, 3600)
-	assert.Equal(t, record.Type, "A")
-	assert.Equal(t, record.Value, "Value")
-	assert.Equal(t, record.ZoneId, "Zone_id")
+	assert.Equal(t, *record.Id, "123")
+	assert.Equal(t, *record.Name, "Record")
+	assert.Equal(t, *record.TTL, 3600)
+	assert.Equal(t, *record.Type, "A")
+	assert.Equal(t, *record.Value, "Value")
+	assert.Equal(t, *record.ZoneId, "Zone_id")
 }
 
 func TestGetRecordError(t *testing.T) {
+	record_id := "123"
 	mux := http.NewServeMux()
 	server := httptest.NewServer(mux)
 
@@ -153,10 +154,12 @@ func TestGetRecordError(t *testing.T) {
 	client := newClient()
 	client.setBaseURL(server.URL)
 	recordService := &recordService{client: client}
-	_, err := recordService.GetRecord("123")
+	_, err := recordService.GetRecord(&record_id)
 
 	assert.Error(t, err, "unexpected end of JSON input")
 }
+
+/*
 
 func TestCreateRecord(t *testing.T) {
 	record := &Record{

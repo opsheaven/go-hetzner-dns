@@ -64,3 +64,8 @@ type Record struct {
 type Records struct {
 	Records []*Record `json:"records"`
 }
+
+type RecordResponse struct {
+	Record *Record `json:"record"`
+	Error  *Error  `json:"error"`
+}
