@@ -3,14 +3,9 @@ package gohetznerdns
 type RecordService interface {
 	GetAllRecords(zone_id *string) ([]*Record, error)
 	GetRecord(record_id *string) (*Record, error)
-	/*
-
-		CreateRecord(request Record) (*Record, error)
-		UpdateRecord(record_id string, request Record) (*Record, error)
-		DeleteRecord(record_id string) error
-		CreateRecords(request Records) (*Records, error)
-		UpdateRecords(request Records) (*Records, error)
-	*/
+	CreateRecord(request *Record) (*Record, error)
+	UpdateRecord(request *Record) (*Record, error)
+	DeleteRecord(record_id *string) error
 }
 
 type recordService struct {
@@ -50,11 +45,8 @@ func (service *recordService) GetRecord(record_id *string) (*Record, error) {
 	return record.Record, nil
 }
 
-/*
-
-// CreateRecord implements RecordsService.
-func (service *recordService) CreateRecord(request Record) (*Record, error) {
-	record := new(record)
+func (service *recordService) CreateRecord(request *Record) (*Record, error) {
+	record := new(RecordResponse)
 	_, err := service.client.
 		createJsonRequest(200).
 		setResult(record).
@@ -66,59 +58,29 @@ func (service *recordService) CreateRecord(request Record) (*Record, error) {
 	return record.Record, nil
 }
 
-// UpdateRecord implements RecordsService.
-func (service *recordService) UpdateRecord(record_id string, request Record) (*Record, error) {
-	if err := validateNotEmpty("record_id", record_id); err != nil {
+func (service *recordService) UpdateRecord(request *Record) (*Record, error) {
+	if err := validateNotEmpty("record_id", request.Id); err != nil {
 		return nil, err
 	}
-	record := new(record)
+	record := new(RecordResponse)
 	_, err := service.client.
 		createJsonRequest(200).
 		setResult(record).
 		setBody(request).
-		execute("PUT", recordsBasePath+"/"+record_id)
+		execute("PUT", recordsBasePath+"/"+*request.Id)
 	if err != nil {
 		return nil, err
 	}
 	return record.Record, nil
 }
 
-// GetRecord implements RecordsService.
-func (service *recordService) DeleteRecord(record_id string) error {
+func (service *recordService) DeleteRecord(record_id *string) error {
 	if err := validateNotEmpty("record_id", record_id); err != nil {
 		return err
 	}
 	_, err := service.client.
 		createTextRequest(200, 404).
-		execute("DELETE", recordsBasePath+"/"+record_id)
+		execute("DELETE", recordsBasePath+"/"+*record_id)
 
 	return err
 }
-
-// BulkCreateRecords implements RecordsService.
-func (service *recordService) CreateRecords(request Records) (*Records, error) {
-	response := new(Records)
-	_, err := service.client.
-		createJsonRequest(200).
-		setResult(response).
-		setBody(request).
-		execute("POST", recordsBasePath+"/bulk")
-	if err != nil {
-		return nil, err
-	}
-	return response, nil
-}
-
-func (service *recordService) UpdateRecords(request Records) (*Records, error) {
-	response := new(Records)
-	_, err := service.client.
-		createJsonRequest(200).
-		setResult(response).
-		setBody(request).
-		execute("PUT", recordsBasePath+"/bulk")
-	if err != nil {
-		return nil, err
-	}
-	return response, nil
-}
-*/
