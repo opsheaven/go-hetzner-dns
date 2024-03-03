@@ -72,10 +72,12 @@ func (r *request) setQueryParams(params map[string]string) *request {
 	r.request.SetQueryParams(params)
 	return r
 }
+
 func (r *request) setBody(body interface{}) *request {
 	r.request.SetBody(body)
 	return r
 }
+
 func (r *request) setResult(result interface{}) *request {
 	r.result = result
 	return r

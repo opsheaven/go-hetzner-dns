@@ -4,23 +4,41 @@ import (
 	"fmt"
 )
 
+// Client interfaces for the Hetzner DNS Public API Zones endpoint
+// See api documentation for more information [https://dns.hetzner.com/api-docs#tag/Zones]
 type ZoneService interface {
+
+	// Returns all zones associated with user. [https://dns.hetzner.com/api-docs#operation/GetAllZones]
 	GetAllZones() ([]*Zone, error)
+
+	// Returns all zones associated with user matching by name. [https://dns.hetzner.com/api-docs#operation/GetAllZones]
 	GetAllZonesByName(name *string) ([]*Zone, error)
+
+	// Returns an object containing all information about a zone. [https://dns.hetzner.com/api-docs#operation/GetZone]
 	GetZoneById(zoneId *string) (*Zone, error)
+
+	// Creates a zone. [https://dns.hetzner.com/api-docs#operation/CreateZone]
 	CreateZone(request *ZoneRequest) (*Zone, error)
+
+	// Updates a zone. [https://dns.hetzner.com/api-docs#operation/UpdateZone]
 	UpdateZone(zoneId *string, request *ZoneRequest) (*Zone, error)
+
+	// Deletes a zone. [https://dns.hetzner.com/api-docs#operation/DeleteZone]
 	DeleteZone(zoneId *string) error
+
+	// Validate a zone file in text/plain format. [https://dns.hetzner.com/api-docs#operation/ValidateZoneFilePlain]
 	ValidateZoneFile(zoneFile *string) error
+
+	// Export a zone file. [https://dns.hetzner.com/api-docs#operation/ExportZoneFile]
 	ExportZoneFile(zoneId *string) (*string, error)
+
+	// Import a zone file. [https://dns.hetzner.com/api-docs#operation/ImportZoneFilePlain]
 	ImportZoneFile(zoneId, zoneFile *string) (*Zone, error)
 }
 
 type zoneService struct {
 	client *client
 }
-
-var _ ZoneService = &zoneService{}
 
 func (service *zoneService) GetAllZones() ([]*Zone, error) {
 	return service.GetAllZonesByName(nil)

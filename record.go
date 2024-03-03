@@ -1,10 +1,22 @@
 package gohetznerdns
 
+// Client interfaces for the Hetzner DNS Public API Records endpoint
+// See api documentation for more information [https://dns.hetzner.com/api-docs#tag/Records]
 type RecordService interface {
+
+	// Returns all records associated with user. [https://dns.hetzner.com/api-docs#operation/GetRecords]
 	GetAllRecords(zone_id *string) ([]*Record, error)
+
+	//Returns information about a single record. [https://dns.hetzner.com/api-docs#operation/GetRecord]
 	GetRecord(record_id *string) (*Record, error)
+
+	//Creates a new record. [https://dns.hetzner.com/api-docs#operation/CreateRecord]
 	CreateRecord(request *Record) (*Record, error)
+
+	//Updates a record. [https://dns.hetzner.com/api-docs#operation/UpdateRecord]
 	UpdateRecord(request *Record) (*Record, error)
+
+	//Deletes a record. [https://dns.hetzner.com/api-docs#operation/DeleteRecord]
 	DeleteRecord(record_id *string) error
 }
 
